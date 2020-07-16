@@ -1,5 +1,5 @@
 {
-  "name": "aa",
+  "name": "calendar",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,9 +9,17 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "element-ui": "^2.13.2",
+    "moment": "^2.27.0",
+    "sass": "^1.26.10",
+    "sass-loader": "^9.0.2",
     "vue": "^2.6.11"
   },
   "devDependencies": {
+    "@fullcalendar/core": "4.4.0",
+    "@fullcalendar/daygrid": "4.4.0",
+    "@fullcalendar/interaction": "4.4.0",
+    "@fullcalendar/vue": "4.4.0",
     "@vue/cli-plugin-babel": "~4.4.0",
     "@vue/cli-plugin-eslint": "~4.4.0",
     "@vue/cli-service": "~4.4.0",
