@@ -2,13 +2,10 @@
   <div class="calendar">
     <FullCalendar
       ref="calendar"
-      class="fullCalendar"
       defaultView="dayGridMonth"
       locale="zh-cn"
       :slot-event-overlap="false"
       :holiaday="holiday"
-      firstDay="1"
-      weekNumberCalculation="ISO"
       :eventTimeFormat="eventTime"
       :header="header"
       :customButtons="customButtons"
@@ -32,12 +29,9 @@
 </template>
 
 <script>
-// @ is an alias to /src
 import FullCalendar from "@fullcalendar/vue";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import moment from "moment";
-
 import calendarDialog from "./calendar-dialog";
 
 export default {
@@ -48,10 +42,9 @@ export default {
   },
   data() {
     return {
-      holiday: {
-        "2020-06-01": "假",
-        "2020-06-02": "假",
-        "2020-06-25": "班"
+      holiday: { //放假时间安排
+        "2020-07-01": "假",
+        "2020-07-05": "班",
       },
       confirm: {
         visible: false
@@ -105,25 +98,33 @@ export default {
           title: "部门会议1",
           start: "2020-07-01 00:00:00",
           end: "2020-07-03 00:00:00",
+          startDate: "2020-07-01 00:00:00",
+          endDate: "2020-07-03 00:00:00",
           ownerDate: "2020-06-01",
           showMore: false
         },
         {
           scheduleId: "2",
-          title: "部门会议1",
+          title: "部门会议2",
           start: "2020-07-01 00:00:00",
           end: "2020-07-03 00:00:00",
+          startDate: "2020-07-01 00:00:00",
+          endDate: "2020-07-03 00:00:00",
           ownerDate: "2020-06-01",
           showMore: false
         },
+       
         {
           scheduleId: "3",
-          title: "部门会议2",
-          start: "2020-07-1 00:00:00",
+          title: "部门会议3",
+          start: "2020-07-01 00:00:00",
           end: "2020-07-03 00:00:00",
+          startDate: "2020-07-01 00:00:00",
+          endDate: "2020-07-03 00:00:00",
           ownerDate: "2020-06-01",
           showMore: false
         },
+
       ]
     };
   },
@@ -150,30 +151,25 @@ export default {
         return;
       }
       let params = {
-        address: "",
-        comment: "",
-        endDate: "",
-        scheduleId: "",
-        ownerDate: "",
-        remind: "",
-        replayStatus: "",
-        startDate: "",
-        title: "",
-        type: ""
+       end:data.endDate,
+       start:data.startDate
       };
       params = Object.assign(params, data);
       delete params.radio;
-      params.start = moment(params.startDate).format("YYYY-MM-DD HH:mm:ss");
-      params.end = moment(params.endDate).format("YYYY-MM-DD HH:mm:ss");
+      // params.start = moment(params.startDate).format("YYYY-MM-DD HH:mm:ss");
+      // params.end = moment(params.endDate).format("YYYY-MM-DD HH:mm:ss");
       let eventIndex = this.calendarEvents.findIndex(
           item => item.scheduleId == params.scheduleId
           );
           console.log(eventIndex)
-      if (eventIndex != -1) {
+      if (eventIndex != -1) {  
           this.calendarEvents[eventIndex] = params
+          this.calendarEvents = [...this.calendarEvents]
+          console.log(this.calendarEvents)
       } else {
         console.log(params)
         this.calendarEvents.push(params);
+        console.log(this.calendarEvents)
       }
     },
     close() {
@@ -196,6 +192,7 @@ export default {
     },
     handleDateClick(arg) {
       console.log(arg)
+      console.log(this.calendarEvents)
       if (window.moredafult) {
         window.moredafult = false;
         return;
@@ -213,15 +210,18 @@ export default {
       let data = {
         scheduleId: arg.view.uid,
         title: "",
+        type:'add',
         dateRange: []
       };
       this.$refs.dialog.setForm(data);
       this.confirm.visible = true;
     },
     handleEventClick(info) {
+      console.log(info)
       let data = Object.assign({}, info.event.extendedProps);
       data.title = info.event.title;
-      data.dateRange = [info.event.start, info.event.end];
+      data.type="edit",
+      data.dateRange = [info.event.extendedProps.startDate, info.event.extendedProps.startDate];
       console.log(data)
       this.$refs.dialog.setForm(data);
       this.confirm.visible = true;
@@ -234,10 +234,11 @@ export default {
       console.log(event.detail.eventRange);
       that.calendarEvents.map(item => {
         if (
-          moment(item.viewStartDate).format("YYYY-MM-DD") ==
-          moment(
-            event.detail.eventRange.def.extendedProps.viewStartDate
-          ).format("YYYY-MM-DD")
+          // moment(item.viewStartDate).format("YYYY-MM-DD") ==
+          // moment(
+          //   event.detail.eventRange.def.extendedProps.viewStartDate
+          // ).format("YYYY-MM-DD")
+          item.viewStartDate === event.detail.eventRange.def.extendedProps.viewStartDate
         ) {
           item.showMore = true;
         }
